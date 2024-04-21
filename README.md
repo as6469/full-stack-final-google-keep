@@ -30,7 +30,4 @@ This is a full-stack application with MongoDB as the backend and frontend code i
 
 Now you can interact with the full-stack application locally. The backend server is running on port 5000, and the frontend development server is running on port 3000.
 
-Feel free to explore and modify the code according to your requirements!
-
-## Directory Structure
 
