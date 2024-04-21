@@ -43,46 +43,31 @@ function App() {
 
 
   function handleClick(event) {
-    console.log(title);
-    console.log(content);
-
     event.preventDefault();
-
+  
     if (title.trim() === "" && content.trim() === "") {
       alert("Please enter a title and content for your note");
       return;
-    } else if (title.trim() === ""){
-      alert ("Please enter a title for your note");
+    } else if (title.trim() === "") {
+      alert("Please enter a title for your note");
       return;
     } else if (content.trim() === "") {
       alert("Please enter some content in your note");
       return;
     }
-
-    //write to mongodb
-    async function postData () {
-      console.log("posting data");
-      const response = await fetch("/api/postData", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        // converting userinput into json 
-        body: JSON.stringify({
-          title: title,
-          content: content,
-        })
-      })
-      if(response?.status === 200) {
-        setDataUpdated(!dataUpdated);
-        setTitle("");
-        setContent("");
-      }
+  
+    const newNote = {
+      _id: Date.now(), 
+      title: title,
+      content: content,
     };
-
-    postData(); // sending data 
+  
+    setBackendData([...backendData, newNote]);
+    setTitle("");
+    setContent("");
   }
+  
+  
 
   useEffect(()=>{
     fetch("/api").then(
