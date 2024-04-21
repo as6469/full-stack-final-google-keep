@@ -9,12 +9,11 @@ app.use(cors()); // middleware
 app.use(bodyParser.json());
 const uri = "mongodb+srv://as6469:randompasswordforfullstack123@s23-w4111.p4yd7np.mongodb.net/?retryWrites=true&w=majority";
 
-const client = new MongoClient(uri); // creating instance 
-const db = client.db("S23-W4111"); // referrencing db
+const client = new MongoClient(uri);
+const db = client.db("S23-W4111"); 
 
 async function main(){
     try {
-        // Connect to the MongoDB cluster
         await client.connect();
         app.listen(5000,()=>{console.log("server started on port 5000")});
  
