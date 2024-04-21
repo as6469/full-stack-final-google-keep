@@ -7,7 +7,7 @@ function App() {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [backendData, setBackendData] = useState([{}]); // storing backend data
+  const [backendData, setBackendData] = useState([]); // Initialize with an empty array
   const [dataUpdated, setDataUpdated] = useState(true); // useeffect dependency
 
   function handleChangeTitle(event) { 
@@ -85,9 +85,6 @@ function App() {
   return (
     <div className="container">
       <Header />
-      <div>
-        
-      </div>
       <form onSubmit={handleClick}>
         <input
           onChange={handleChangeTitle}
