@@ -18,8 +18,14 @@ function App() {
     setContent(event.target.value);
   }
 
+  function deleteNoteLocally(id) {
+    setBackendData(backendData.filter(note => note._id !== id));
+  }
+
   function deleteNote(id) {
-    console.log(`trying to delete ${id}`)
+    console.log(`trying to delete ${id}`);
+
+    deleteNoteLocally(id); // Delete locally first
 
     async function deleteData () {
       console.log("deleting data");
@@ -28,15 +34,15 @@ function App() {
         headers: {
           "Content-Type": "application/json",
         },
-
         body: JSON.stringify({
           id: id.toString()
         })
-      })
-      if(response?.status === 200) {
+      });
+      if(response?.status !== 200) {
+        // Revert the delete operation if deletion fails
         setDataUpdated(!dataUpdated);
       }
-    };
+    }
 
     deleteData();
   }
@@ -67,18 +73,14 @@ function App() {
     setContent("");
   }
   
-  
-
-  useEffect(()=>{
-    fetch("/api").then(
-      response => response.json() 
-    ).then(
-      data =>{
+  useEffect(() => {
+    fetch("/api")
+      .then(response => response.json())
+      .then(data => {
         setBackendData(data);
         console.log(data);
-      }
-    )
-  },[dataUpdated])
+      });
+  }, [dataUpdated]);
 
   return (
     <div className="container">
@@ -106,17 +108,17 @@ function App() {
           +
         </button>
       </form>
-      {(backendData.length === 0)? (
+      {(backendData.length === 0) ? (
         <p>Loading notes...</p> 
-      ):(
+      ) : (
         backendData.map((note) => (
           <Note
-          key={note._id}
-          id={note._id}
-          title={note.title}
-          content={note.content}
-          onDelete={deleteNote}
-        />
+            key={note._id}
+            id={note._id}
+            title={note.title}
+            content={note.content}
+            onDelete={deleteNote}
+          />
         ))
       )}
       <Footer />
