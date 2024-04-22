@@ -1,4 +1,4 @@
-# Full Stack App with MongoDB Backend and Frontend
+# Full Stack Google Keep
 
 This is a full-stack application with MongoDB as the backend and frontend code in the client directory.
 
