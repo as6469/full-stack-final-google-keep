@@ -4,13 +4,28 @@ import Note from "./Note";
 import Footer from "./Footer";
 
 function App() {
-
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [backendData, setBackendData] = useState([]); // Initialize with an empty array
-  const [dataUpdated, setDataUpdated] = useState(true); // useeffect dependency
+  const [backendData, setBackendData] = useState([]);
+  const [dataUpdated, setDataUpdated] = useState(true);
 
-  function handleChangeTitle(event) { 
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem("notes"));
+    if (storedData && storedData.length) {
+      setBackendData(storedData);
+    } else {
+      fetchNotes();
+    }
+  }, []);
+
+  async function fetchNotes() {
+    const response = await fetch("/api");
+    const data = await response.json();
+    setBackendData(data);
+    localStorage.setItem("notes", JSON.stringify(data));
+  }
+
+  function handleChangeTitle(event) {
     setTitle(event.target.value);
   }
 
@@ -19,27 +34,27 @@ function App() {
   }
 
   function deleteNoteLocally(id) {
-    setBackendData(backendData.filter(note => note._id !== id));
+    setBackendData(backendData.filter((note) => note._id !== id));
+    localStorage.setItem(
+      "notes",
+      JSON.stringify(backendData.filter((note) => note._id !== id))
+    );
   }
 
   function deleteNote(id) {
-    console.log(`trying to delete ${id}`);
+    deleteNoteLocally(id);
 
-    deleteNoteLocally(id); // Delete locally first
-
-    async function deleteData () {
-      console.log("deleting data");
+    async function deleteData() {
       const response = await fetch("/api/deleteData", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: id.toString()
-        })
+          id: id.toString(),
+        }),
       });
-      if(response?.status !== 200) {
-        // Revert the delete operation if deletion fails
+      if (response?.status !== 200) {
         setDataUpdated(!dataUpdated);
       }
     }
@@ -47,10 +62,9 @@ function App() {
     deleteData();
   }
 
-
   function handleClick(event) {
     event.preventDefault();
-  
+
     if (title.trim() === "" && content.trim() === "") {
       alert("Please enter a title and content for your note");
       return;
@@ -61,26 +75,21 @@ function App() {
       alert("Please enter some content in your note");
       return;
     }
-  
+
     const newNote = {
-      _id: Date.now(), 
+      _id: Date.now(),
       title: title,
       content: content,
     };
-  
+
     setBackendData([...backendData, newNote]);
+    localStorage.setItem(
+      "notes",
+      JSON.stringify([...backendData, newNote])
+    );
     setTitle("");
     setContent("");
   }
-  
-  useEffect(() => {
-    fetch("/api")
-      .then(response => response.json())
-      .then(data => {
-        setBackendData(data);
-        console.log(data);
-      });
-  }, [dataUpdated]);
 
   return (
     <div className="container">
@@ -101,12 +110,10 @@ function App() {
           rows="2"
         />
         <br />
-        <button type="submit" onClick={handleClick}>
-          +
-        </button>
+        <button type="submit">+</button>
       </form>
-      {(backendData.length === 0) ? (
-        <p>Loading notes...</p> 
+      {backendData.length === 0 ? (
+        <p>Loading notes...</p>
       ) : (
         backendData.map((note) => (
           <Note
